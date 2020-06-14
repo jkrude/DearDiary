@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="categories">
+        <item>Schlaf</item>
+        <item>Sport</item>
+        <item>Film/Serie</item>
+        <item>Gelesen</item>
+        <item>Soziale Treffen</item>
+        <item>Kino</item>
+        <item>ToDo erstellt</item>
+        <item>ToDo erledigt</item>
+        <item>Beziehung/Treffen</item>
+        <item>Beziehung/Dates</item>
+        <item>Beziehung/Pleasure</item>
+    </string-array>
+</resources>

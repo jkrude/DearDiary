@@ -1,4 +1,4 @@
-package com.jkrude.deardiary.db.enteties;
+package com.jkrude.deardiary.db.entities;
 
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverter;
@@ -12,7 +12,7 @@ import java.sql.Date;
 public class DayEntity {
 
     @PrimaryKey
-    public Date id;
+    public Date date_id;
 
     public LocalTime sleep;
 

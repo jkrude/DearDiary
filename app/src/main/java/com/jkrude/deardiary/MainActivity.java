@@ -8,7 +8,10 @@ import android.os.Bundle;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.jkrude.deardiary.db.AppDatabase;
-import com.jkrude.deardiary.db.enteties.DayEntity;
+import com.jkrude.deardiary.db.entities.DayCommCrossRef;
+import com.jkrude.deardiary.db.entities.DayComment;
+import com.jkrude.deardiary.db.entities.DayEntity;
+import com.jkrude.deardiary.db.entities.DayWithComments;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -22,6 +25,9 @@ import android.view.MenuItem;
 
 import java.sql.Date;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -97,12 +103,30 @@ public class MainActivity extends AppCompatActivity {
     private void testDB() {
         AsyncTask.execute(() -> {
             AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "db").build();
-            DayEntity entity = new DayEntity();
 
-            entity.id = new Date(1000000000);
+            DayEntity entity = new DayEntity();
+            entity.date_id = new Date(1592059378);
             entity.sleep = LocalTime.of(10, 5);
-            db.dbAccess().insertAll(entity);
+            db.dbAccess().insertDay(entity);
+            DayEntity entity1 = new DayEntity();
+            entity1.date_id = new Date(1592145778);
+            db.dbAccess().insertDay(entity1);
+
+            DayComment comment = new DayComment("Gut");
+            db.dbAccess().insertComment(comment);
+            DayComment comment1 = new DayComment("Töpi");
+            db.dbAccess().insertComment(comment1);
+            DayComment comment2 = new DayComment("mäßig");
+            db.dbAccess().insertComment(comment2);
+
+            DayCommCrossRef ref = new DayCommCrossRef(entity.date_id, comment.comment);
+            DayCommCrossRef ref1 = new DayCommCrossRef(entity.date_id, comment1.comment);
+            DayCommCrossRef ref2 = new DayCommCrossRef(entity1.date_id, comment2.comment);
+            db.dbAccess().insertAllRefs(Arrays.asList(ref, ref1, ref2));
+
+
             List<DayEntity> entities = db.dbAccess().getDayEntities();
+            List<DayWithComments> res = db.dbAccess().getDaysWithComments();
         });
     }
 }

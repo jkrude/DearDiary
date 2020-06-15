@@ -29,6 +29,7 @@ import java.sql.Date;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     public static final String sharedPrefsTag = "com.jkrude.dearDiary";
@@ -139,6 +140,9 @@ public class MainActivity extends AppCompatActivity {
             Map<String, Boolean> bMap = BinaryEntry.viewAsMap(b);*/
             DayWithAllEntries d = db.dbAccess().getEverythingForOneDay(day0);
 
+            timeEntry0.value = LocalTime.of(8, 5);
+            db.dbAccess().updateTimeEntry(timeEntry0);
+            List<TimeEntry> t = db.dbAccess().getTimeEntriesForDate(day0.date_id.getTime());
         });
     }
 }

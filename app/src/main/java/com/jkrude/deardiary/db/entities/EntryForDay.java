@@ -12,9 +12,11 @@ public abstract class EntryForDay<T> {
 
     @NonNull
     public T value;
+
     @NonNull
     public String catName;
 
+    @NonNull
     public Date dayID;
 
     public EntryForDay(@NonNull T value, @NonNull String catName, @NonNull Date dayID) {

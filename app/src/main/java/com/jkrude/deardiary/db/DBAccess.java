@@ -5,6 +5,7 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Transaction;
+import androidx.room.Update;
 
 import com.jkrude.deardiary.db.entities.BinaryEntry;
 import com.jkrude.deardiary.db.entities.CounterEntry;
@@ -20,6 +21,10 @@ import java.util.List;
 
 @Dao
 public interface DBAccess {
+
+    /*
+     * Queries
+     */
 
     @Transaction
     @Query("SELECT * FROM DayEntity")
@@ -49,6 +54,10 @@ public interface DBAccess {
             " WHERE date_id LIKE :date")
     List<String> getCommentsForDate(long date);
 
+    /*
+     * INSERT / DELETE / UPDATE
+     */
+
     @Insert
     void insertComment(DayComment... comment);
 
@@ -67,14 +76,27 @@ public interface DBAccess {
     @Insert
     void insertBinaryEntry(BinaryEntry... binaryEntries);
 
+    @Update
+    void updateBinaryEntry(BinaryEntry... binaryEntries);
+
     @Insert
     void insertCounterEntry(CounterEntry... counterEntries);
+
+    @Update
+    void updateCounterEntry(CounterEntry... counterEntries);
 
     @Insert
     void insertTextEntry(TextEntry... textEntries);
 
     @Insert
+    void updateTextEntry(TextEntry... textEntries);
+
+    @Insert
     void insertTimeEntry(TimeEntry... timeEntries);
+
+    @Update
+    void updateTimeEntry(TimeEntry... timeEntries);
+
 
     @Transaction
     default DayWithAllEntries getEverythingForOneDay(DayEntity dayEntity) {

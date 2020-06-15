@@ -10,7 +10,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 
-@Entity(primaryKeys = {"value", "catName"},
+@Entity(primaryKeys = {"dayID", "catName"},
         foreignKeys = @ForeignKey(
                 entity = DayEntity.class,
                 parentColumns = "date_id",

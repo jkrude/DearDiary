@@ -2,6 +2,7 @@ package com.jkrude.deardiary.db.entities;
 
 
 import java.sql.Date;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 
@@ -12,5 +13,7 @@ public class DayWithAllEntries {
 
     public Map<String, Integer> counterCategories;
     public Map<String, Boolean> binaryCategories;
+    public Map<String, String> textCategories;
+    public Map<String, LocalTime> timeCategories;
 
 }

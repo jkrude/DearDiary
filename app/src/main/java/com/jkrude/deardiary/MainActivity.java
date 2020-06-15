@@ -23,6 +23,7 @@ import com.jkrude.deardiary.db.entities.DayCommCrossRef;
 import com.jkrude.deardiary.db.entities.DayComment;
 import com.jkrude.deardiary.db.entities.DayEntity;
 import com.jkrude.deardiary.db.entities.DayWithAllEntries;
+import com.jkrude.deardiary.db.entities.TimeEntry;
 
 import java.sql.Date;
 import java.time.LocalTime;
@@ -124,6 +125,10 @@ public class MainActivity extends AppCompatActivity {
 
             CounterEntry counterEntry = new CounterEntry(1, "Artikel", day1.date_id);
             db.dbAccess().insertCounterEntry(counterEntry);
+
+            TimeEntry timeEntry0 = new TimeEntry(LocalTime.of(10, 5), "Schlaf", day0.date_id);
+            TimeEntry timeEntry1 = new TimeEntry(LocalTime.of(8, 5), "Schlaf", day1.date_id);
+            db.dbAccess().insertTimeEntry(timeEntry0, timeEntry1);
 
             /*List<DayEntity> entities = db.dbAccess().getDayEntities();
             List<DayWithComments> res = db.dbAccess().getDaysWithComments();

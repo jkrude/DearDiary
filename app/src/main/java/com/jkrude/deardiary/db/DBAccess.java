@@ -13,6 +13,8 @@ import com.jkrude.deardiary.db.entities.DayComment;
 import com.jkrude.deardiary.db.entities.DayEntity;
 import com.jkrude.deardiary.db.entities.DayWithAllEntries;
 import com.jkrude.deardiary.db.entities.DayWithComments;
+import com.jkrude.deardiary.db.entities.TextEntry;
+import com.jkrude.deardiary.db.entities.TimeEntry;
 
 import java.util.List;
 
@@ -34,6 +36,14 @@ public interface DBAccess {
     @Query("SELECT * FROM binaryentry" +
             " WHERE binaryentry.dayID LIKE :date")
     List<BinaryEntry> getBinaryEntriesForDate(long date);
+
+    @Query("SELECT * FROM textentry" +
+            " WHERE textentry.dayID LIKE :date")
+    List<TextEntry> getTextEntriesForDate(long date);
+
+    @Query("SELECT * FROM timeentry" +
+            " WHERE timeentry.dayID LIKE :date")
+    List<TimeEntry> getTimeEntriesForDate(long date);
 
     @Query("SELECT comment FROM DayCommCrossRef" +
             " WHERE date_id LIKE :date")
@@ -60,6 +70,12 @@ public interface DBAccess {
     @Insert
     void insertCounterEntry(CounterEntry... counterEntries);
 
+    @Insert
+    void insertTextEntry(TextEntry... textEntries);
+
+    @Insert
+    void insertTimeEntry(TimeEntry... timeEntries);
+
     @Transaction
     default DayWithAllEntries getEverythingForOneDay(DayEntity dayEntity) {
         long dateAsLong = dayEntity.date_id.getTime();
@@ -67,6 +83,8 @@ public interface DBAccess {
         d.date = dayEntity.date_id;
         d.counterCategories = CounterEntry.viewAsMap(getCounterEntriesForDate(dateAsLong));
         d.binaryCategories = BinaryEntry.viewAsMap(getBinaryEntriesForDate(dateAsLong));
+        d.textCategories = TextEntry.viewAsMap(getTextEntriesForDate(dateAsLong));
+        d.timeCategories = TimeEntry.viewAsMap(getTimeEntriesForDate(dateAsLong));
         d.comments = getCommentsForDate(dateAsLong);
         return d;
     }

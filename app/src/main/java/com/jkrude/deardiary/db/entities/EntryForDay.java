@@ -1,7 +1,6 @@
 package com.jkrude.deardiary.db.entities;
 
 import androidx.annotation.NonNull;
-import androidx.room.TypeConverters;
 
 import java.sql.Date;
 import java.util.HashMap;
@@ -9,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 
-@TypeConverters(DayEntity.DateConverter.class)
 public abstract class EntryForDay<T> {
 
     @NonNull

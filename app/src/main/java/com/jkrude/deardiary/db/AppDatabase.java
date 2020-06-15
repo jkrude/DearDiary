@@ -8,6 +8,8 @@ import com.jkrude.deardiary.db.entities.CounterEntry;
 import com.jkrude.deardiary.db.entities.DayCommCrossRef;
 import com.jkrude.deardiary.db.entities.DayComment;
 import com.jkrude.deardiary.db.entities.DayEntity;
+import com.jkrude.deardiary.db.entities.TextEntry;
+import com.jkrude.deardiary.db.entities.TimeEntry;
 
 @Database(
         entities = {
@@ -15,7 +17,9 @@ import com.jkrude.deardiary.db.entities.DayEntity;
                 DayComment.class,
                 DayCommCrossRef.class,
                 BinaryEntry.class,
-                CounterEntry.class},
+                CounterEntry.class,
+                TextEntry.class,
+                TimeEntry.class},
         version = 1,
         exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {

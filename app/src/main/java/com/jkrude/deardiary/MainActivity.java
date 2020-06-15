@@ -4,14 +4,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-import com.jkrude.deardiary.db.AppDatabase;
-import com.jkrude.deardiary.db.entities.DayCommCrossRef;
-import com.jkrude.deardiary.db.entities.DayComment;
-import com.jkrude.deardiary.db.entities.DayEntity;
-import com.jkrude.deardiary.db.entities.DayWithComments;
+import android.util.Pair;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -19,18 +14,20 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 
-import android.util.Pair;
-import android.view.Menu;
-import android.view.MenuItem;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+import com.jkrude.deardiary.db.AppDatabase;
+import com.jkrude.deardiary.db.entities.BinaryEntry;
+import com.jkrude.deardiary.db.entities.CounterEntry;
+import com.jkrude.deardiary.db.entities.DayCommCrossRef;
+import com.jkrude.deardiary.db.entities.DayComment;
+import com.jkrude.deardiary.db.entities.DayEntity;
+import com.jkrude.deardiary.db.entities.DayWithAllEntries;
 
 import java.sql.Date;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     public static final String sharedPrefsTag = "com.jkrude.dearDiary";
@@ -103,30 +100,40 @@ public class MainActivity extends AppCompatActivity {
     private void testDB() {
         AsyncTask.execute(() -> {
             AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "db").build();
+            db.clearAllTables();
 
-            DayEntity entity = new DayEntity();
-            entity.date_id = new Date(1592059378);
-            entity.sleep = LocalTime.of(10, 5);
-            db.dbAccess().insertDay(entity);
-            DayEntity entity1 = new DayEntity();
-            entity1.date_id = new Date(1592145778);
-            db.dbAccess().insertDay(entity1);
+            DayEntity day0 = new DayEntity();
+            day0.date_id = Date.valueOf("2020-01-01");
+            day0.sleep = LocalTime.of(10, 5);
+            DayEntity day1 = new DayEntity();
+            day1.date_id = Date.valueOf("2020-02-02");
+            db.dbAccess().insertDay(day0, day1);
 
             DayComment comment = new DayComment("Gut");
-            db.dbAccess().insertComment(comment);
             DayComment comment1 = new DayComment("Töpi");
-            db.dbAccess().insertComment(comment1);
             DayComment comment2 = new DayComment("mäßig");
-            db.dbAccess().insertComment(comment2);
+            db.dbAccess().insertComment(comment, comment1, comment2);
 
-            DayCommCrossRef ref = new DayCommCrossRef(entity.date_id, comment.comment);
-            DayCommCrossRef ref1 = new DayCommCrossRef(entity.date_id, comment1.comment);
-            DayCommCrossRef ref2 = new DayCommCrossRef(entity1.date_id, comment2.comment);
-            db.dbAccess().insertAllRefs(Arrays.asList(ref, ref1, ref2));
+            DayCommCrossRef ref = new DayCommCrossRef(day0.date_id, comment.comment);
+            DayCommCrossRef ref1 = new DayCommCrossRef(day0.date_id, comment1.comment);
+            DayCommCrossRef ref2 = new DayCommCrossRef(day1.date_id, comment2.comment);
+            db.dbAccess().insertAllRefs(ref, ref1, ref2);
 
+            BinaryEntry catEntry = new BinaryEntry(false, "ToDoErledigt", day0.date_id);
+            db.dbAccess().insertBinaryEntry(catEntry);
 
-            List<DayEntity> entities = db.dbAccess().getDayEntities();
+            CounterEntry counterEntry = new CounterEntry(1, "Artikel", day1.date_id);
+            db.dbAccess().insertCounterEntry(counterEntry);
+
+            /*List<DayEntity> entities = db.dbAccess().getDayEntities();
             List<DayWithComments> res = db.dbAccess().getDaysWithComments();
+
+            List<CounterEntry> c = db.dbAccess().getCounterEntriesForDate(DayEntity.DateConverter.fromDate(day1.date_id));
+            Map<String, Integer> cMap = CounterEntry.viewAsMap(c);
+            List<BinaryEntry> b = db.dbAccess().getBinaryEntriesForDate(DayEntity.DateConverter.fromDate(day0.date_id));
+            Map<String, Boolean> bMap = BinaryEntry.viewAsMap(b);*/
+            DayWithAllEntries d = db.dbAccess().getEverythingForOneDay(day0);
+
         });
     }
 }

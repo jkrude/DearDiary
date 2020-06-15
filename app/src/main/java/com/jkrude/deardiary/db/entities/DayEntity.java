@@ -4,8 +4,8 @@ import androidx.room.PrimaryKey;
 import androidx.room.TypeConverter;
 import androidx.room.TypeConverters;
 
-import java.time.LocalTime;
 import java.sql.Date;
+import java.time.LocalTime;
 
 @androidx.room.Entity
 @TypeConverters({DayEntity.DateConverter.class, DayEntity.LocalTimeConverter.class})
@@ -16,10 +16,6 @@ public class DayEntity {
 
     public LocalTime sleep;
 
-    /*@Relation(
-            parentColumn = "id",
-            entityColumn = "commentDate")
-    public List<DayComment> dayComments;*/
 
     public static class DateConverter {
 

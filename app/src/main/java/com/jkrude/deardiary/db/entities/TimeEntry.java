@@ -4,8 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.TypeConverters;
-
-import java.sql.Date;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +18,7 @@ import java.util.Map;
 @TypeConverters({DayEntity.DateConverter.class, DayEntity.LocalTimeConverter.class})
 public class TimeEntry extends EntryForDay<LocalTime> {
 
-    public TimeEntry(@NonNull LocalTime value, @NonNull String catName, @NonNull Date dayID) {
+    public TimeEntry(@NonNull LocalTime value, @NonNull String catName, @NonNull LocalDate dayID) {
         super(value, catName, dayID);
     }
 

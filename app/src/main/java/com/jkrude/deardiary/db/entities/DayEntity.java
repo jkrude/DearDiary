@@ -1,34 +1,38 @@
 package com.jkrude.deardiary.db.entities;
 
+import androidx.annotation.NonNull;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverter;
 import androidx.room.TypeConverters;
-
-import java.sql.Date;
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 @androidx.room.Entity
 @TypeConverters({DayEntity.DateConverter.class, DayEntity.LocalTimeConverter.class})
 public class DayEntity {
 
-    @PrimaryKey
-    public Date date_id;
+  @PrimaryKey
+  @NonNull
+  public LocalDate date_id;
 
-    public LocalTime sleep;
+  public LocalTime sleep;
 
+  public DayEntity(@NonNull LocalDate date_id) {
+    this.date_id = date_id;
+  }
 
-    public static class DateConverter {
+  public static class DateConverter {
 
-        @TypeConverter
-        public static Date toDate(Long dateLong) {
-            return dateLong == null ? null : new Date(dateLong);
-        }
-
-        @TypeConverter
-        public static Long fromDate(Date date) {
-            return date == null ? null : date.getTime();
-        }
+    @TypeConverter
+    public static LocalDate toDate(String dateLong) {
+      return dateLong == null ? null : LocalDate.parse(dateLong);
     }
+
+    @TypeConverter
+    public static String fromDate(LocalDate date) {
+      return date == null ? null : date.toString();
+    }
+  }
 
     public static class LocalTimeConverter {
 

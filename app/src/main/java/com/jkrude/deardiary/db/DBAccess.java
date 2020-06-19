@@ -1,22 +1,24 @@
 package com.jkrude.deardiary.db;
 
+import androidx.annotation.Nullable;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Transaction;
 import androidx.room.Update;
-
 import com.jkrude.deardiary.db.entities.BinaryEntry;
 import com.jkrude.deardiary.db.entities.CounterEntry;
 import com.jkrude.deardiary.db.entities.DayCommCrossRef;
 import com.jkrude.deardiary.db.entities.DayComment;
 import com.jkrude.deardiary.db.entities.DayEntity;
+import com.jkrude.deardiary.db.entities.DayEntity.DateConverter;
 import com.jkrude.deardiary.db.entities.DayWithAllEntries;
 import com.jkrude.deardiary.db.entities.DayWithComments;
 import com.jkrude.deardiary.db.entities.TextEntry;
 import com.jkrude.deardiary.db.entities.TimeEntry;
-
+import java.time.LocalDate;
 import java.util.List;
 
 @Dao
@@ -31,67 +33,75 @@ public interface DBAccess {
     List<DayEntity> getDayEntities();
 
     @Transaction
+    @Query("SELECT * FROM dayentity WHERE date_id LIKE :date")
+    List<DayEntity> getDayEntitiesForDay(String date);
+
+    default List<CounterEntry> getDayEntitiesForDay(LocalDate date) {
+        return getCounterEntriesForDate(DayEntity.DateConverter.fromDate(date));
+    }
+
+    @Transaction
     @Query("SELECT * FROM DayEntity")
     List<DayWithComments> getDaysWithComments();
 
     @Query("SELECT * FROM counterentry" +
-            " WHERE counterentry.dayID LIKE :date")
-    List<CounterEntry> getCounterEntriesForDate(long date);
+        " WHERE counterentry.dayID LIKE :date")
+    List<CounterEntry> getCounterEntriesForDate(String date);
 
     @Query("SELECT * FROM binaryentry" +
-            " WHERE binaryentry.dayID LIKE :date")
-    List<BinaryEntry> getBinaryEntriesForDate(long date);
+        " WHERE binaryentry.dayID LIKE :date")
+    List<BinaryEntry> getBinaryEntriesForDate(String date);
 
     @Query("SELECT * FROM textentry" +
-            " WHERE textentry.dayID LIKE :date")
-    List<TextEntry> getTextEntriesForDate(long date);
+        " WHERE textentry.dayID LIKE :date")
+    List<TextEntry> getTextEntriesForDate(String date);
 
     @Query("SELECT * FROM timeentry" +
-            " WHERE timeentry.dayID LIKE :date")
-    List<TimeEntry> getTimeEntriesForDate(long date);
+        " WHERE timeentry.dayID LIKE :date")
+    List<TimeEntry> getTimeEntriesForDate(String date);
 
     @Query("SELECT comment FROM DayCommCrossRef" +
-            " WHERE date_id LIKE :date")
-    List<String> getCommentsForDate(long date);
+        " WHERE date_id LIKE :date")
+    List<String> getCommentsForDate(String date);
 
     /*
      * INSERT / DELETE / UPDATE
      */
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertComment(DayComment... comment);
 
     @Delete
     void deleteComment(DayComment... comment);
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAllRefs(DayCommCrossRef... refs);
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertDay(DayEntity... dayEntity);
 
     @Delete
     void deleteDay(DayEntity dayEntity);
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertBinaryEntry(BinaryEntry... binaryEntries);
 
     @Update
     void updateBinaryEntry(BinaryEntry... binaryEntries);
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertCounterEntry(CounterEntry... counterEntries);
 
     @Update
     void updateCounterEntry(CounterEntry... counterEntries);
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertTextEntry(TextEntry... textEntries);
 
-    @Insert
+    @Update
     void updateTextEntry(TextEntry... textEntries);
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertTimeEntry(TimeEntry... timeEntries);
 
     @Update
@@ -99,15 +109,19 @@ public interface DBAccess {
 
 
     @Transaction
-    default DayWithAllEntries getEverythingForOneDay(DayEntity dayEntity) {
-        long dateAsLong = dayEntity.date_id.getTime();
-        DayWithAllEntries d = new DayWithAllEntries();
-        d.date = dayEntity.date_id;
-        d.counterCategories = CounterEntry.viewAsMap(getCounterEntriesForDate(dateAsLong));
-        d.binaryCategories = BinaryEntry.viewAsMap(getBinaryEntriesForDate(dateAsLong));
-        d.textCategories = TextEntry.viewAsMap(getTextEntriesForDate(dateAsLong));
-        d.timeCategories = TimeEntry.viewAsMap(getTimeEntriesForDate(dateAsLong));
-        d.comments = getCommentsForDate(dateAsLong);
+    @Nullable
+    default DayWithAllEntries getEverythingForOneDay(LocalDate date) {
+        String dateAsString = DateConverter.fromDate(date);
+        if (getDayEntitiesForDay(dateAsString).isEmpty()) {
+            return null;
+        }
+        DayWithAllEntries d = new DayWithAllEntries(date);
+        d.date = date;
+        d.binaryCategories = BinaryEntry.viewAsMap(getBinaryEntriesForDate(dateAsString));
+        d.counterCategories = CounterEntry.viewAsMap(getCounterEntriesForDate(dateAsString));
+        d.textCategories = TextEntry.viewAsMap(getTextEntriesForDate(dateAsString));
+        d.timeCategories = TimeEntry.viewAsMap(getTimeEntriesForDate(dateAsString));
+        d.comments = getCommentsForDate(dateAsString);
         return d;
     }
 

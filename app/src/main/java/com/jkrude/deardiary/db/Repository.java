@@ -3,9 +3,9 @@ package com.jkrude.deardiary.db;
 import android.content.SharedPreferences;
 import android.util.Log;
 import androidx.annotation.NonNull;
+import com.jkrude.deardiary.Utility;
 import com.jkrude.deardiary.db.entities.BinaryEntry;
 import com.jkrude.deardiary.db.entities.CounterEntry;
-import com.jkrude.deardiary.db.entities.DayEntity;
 import com.jkrude.deardiary.db.entities.DayWithAllEntries;
 import com.jkrude.deardiary.db.entities.TextEntry;
 import com.jkrude.deardiary.db.entities.TimeEntry;
@@ -49,7 +49,7 @@ public class Repository {
     if (today == null) {
       throw new IllegalStateException("Current Date not in SharedPreferences");
     }
-    LocalDate date = DayEntity.DateConverter.toDate(today);
+    LocalDate date = Utility.DateConverter.toDate(today);
     DayWithAllEntries d = dbAccess.getEverythingForOneDay(date);
     if (d == null) {
       throw new IllegalStateException("Current Date not in DB");

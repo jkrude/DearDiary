@@ -8,12 +8,13 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Transaction;
 import androidx.room.Update;
+import com.jkrude.deardiary.Utility;
+import com.jkrude.deardiary.Utility.DateConverter;
 import com.jkrude.deardiary.db.entities.BinaryEntry;
 import com.jkrude.deardiary.db.entities.CounterEntry;
 import com.jkrude.deardiary.db.entities.DayCommCrossRef;
 import com.jkrude.deardiary.db.entities.DayComment;
 import com.jkrude.deardiary.db.entities.DayEntity;
-import com.jkrude.deardiary.db.entities.DayEntity.DateConverter;
 import com.jkrude.deardiary.db.entities.DayWithAllEntries;
 import com.jkrude.deardiary.db.entities.DayWithComments;
 import com.jkrude.deardiary.db.entities.TextEntry;
@@ -37,7 +38,7 @@ public interface DBAccess {
     List<DayEntity> getDayEntitiesForDay(String date);
 
     default List<CounterEntry> getDayEntitiesForDay(LocalDate date) {
-        return getCounterEntriesForDate(DayEntity.DateConverter.fromDate(date));
+        return getCounterEntriesForDate(Utility.DateConverter.fromDate(date));
     }
 
     @Transaction

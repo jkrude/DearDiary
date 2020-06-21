@@ -3,10 +3,11 @@ package com.jkrude.deardiary.db.entities;
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.TypeConverters;
+import com.jkrude.deardiary.Utility;
 import java.time.LocalDate;
 
 @Entity(primaryKeys = {"date_id", "comment"})
-@TypeConverters(DayEntity.DateConverter.class)
+@TypeConverters(Utility.DateConverter.class)
 public class DayCommCrossRef {
 
   @NonNull

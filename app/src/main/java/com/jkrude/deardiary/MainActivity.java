@@ -20,7 +20,7 @@ import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
 
-  public static final String sharedPrefsTag = "com.jkrude.dearDiary";
+  public static final String SHARED_PREFS_TAG = "com.jkrude.dearDiary";
   public static final String LOGTAG = "Main";
   AppDatabase db;
   Repository repository;
@@ -33,14 +33,14 @@ public class MainActivity extends AppCompatActivity {
     db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "db").build();
     repository = new Repository(
         db.dbAccess(),
-        getApplicationContext().getSharedPreferences(sharedPrefsTag, Context.MODE_PRIVATE));
+        getApplicationContext().getSharedPreferences(SHARED_PREFS_TAG, Context.MODE_PRIVATE));
     //TODO
-    //testDB();
     Initiator initiator = new Initiator(
-        getApplicationContext().getSharedPreferences(sharedPrefsTag, Context.MODE_PRIVATE),
+        getApplicationContext().getSharedPreferences(SHARED_PREFS_TAG, Context.MODE_PRIVATE),
         db.dbAccess(),
         repository);
     initiator.execute();
+    //UI-setup
     Toolbar toolbar = findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
 
@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     // RecyclerView config
     RecyclerView recyclerView = findViewById(R.id.recyclerView);
     try {
+      // needs loading screen
       initiator.get();
     } catch (ExecutionException | InterruptedException e) {
       e.printStackTrace();
@@ -92,9 +93,6 @@ public class MainActivity extends AppCompatActivity {
   protected void onStop() {
     super.onStop();
     AsyncTask.execute(() ->
-    {
-      repository.save();
-    });
+        repository.save());
   }
-
 }

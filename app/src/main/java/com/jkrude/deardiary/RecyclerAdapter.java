@@ -15,11 +15,15 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.TimePicker;
+
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.jkrude.deardiary.db.Repository;
 import com.jkrude.deardiary.db.entities.EntryForDay;
+
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +42,9 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     public RecyclerAdapter(
             @NonNull Context context,
             @NonNull Repository rep) {
+        if (!(context instanceof AppCompatActivity)) {
+            throw new IllegalArgumentException("Context is required to be cast to AppCompatActivity");
+        }
         this.context = context;
         this.rep = rep;
 
@@ -205,6 +212,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             nameTxtView.setText(counterEntry.catName);
             stateTxtView.setText(String.valueOf(counterEntry.value));
         }
+
         private void updateState(int x) {
             entry.value += x;
             stateTxtView.setText(String.valueOf(entry.value));
@@ -243,6 +251,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             // Fix for "Focus search returned a view that wasn't able to take focus"
             editText.setImeOptions(EditorInfo.IME_ACTION_DONE);
         }
+
         @Override
         public void init(@NonNull EntryForDay<String> textEntry) {
             this.entry = textEntry;
@@ -266,7 +275,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             btn.setOnClickListener(v ->
             {
                 DialogFragment timePicker = new TimePickerFragment(this);
-                timePicker.show(((MainActivity) context).getSupportFragmentManager(), " TP");
+                timePicker.show(((AppCompatActivity) context).getSupportFragmentManager(), " TP");
             });
         }
 

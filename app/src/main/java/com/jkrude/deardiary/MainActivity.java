@@ -9,15 +9,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
+
 import com.jkrude.deardiary.db.AppDatabase;
 import com.jkrude.deardiary.db.DBAccess;
 import com.jkrude.deardiary.db.Initiator;
 import com.jkrude.deardiary.db.Repository;
+
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ExecutionException;
 
@@ -110,8 +113,8 @@ public class MainActivity extends AppCompatActivity {
     // RecyclerView config
     RecyclerView recyclerView = findViewById(R.id.recyclerView);
     RecyclerAdapter adapter = new RecyclerAdapter(
-        getApplicationContext(),
-        repository);
+            this,
+            repository);
     recyclerView.setAdapter(adapter);
     recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
   }

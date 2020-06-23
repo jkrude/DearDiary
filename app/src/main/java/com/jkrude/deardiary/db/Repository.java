@@ -11,8 +11,10 @@ import com.jkrude.deardiary.db.entities.TextEntry;
 import com.jkrude.deardiary.db.entities.TimeEntry;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -33,6 +35,8 @@ public class Repository {
   Map<String, TextEntry> textEntries;
   private @NonNull
   Map<String, TimeEntry> timeEntries;
+  private @NonNull
+  List<String> comments;
 
 
   public Repository(@NonNull DBAccess dbAccess, @NonNull SharedPreferences preferences) {
@@ -40,6 +44,7 @@ public class Repository {
     counterEntries = new HashMap<>();
     textEntries = new HashMap<>();
     timeEntries = new HashMap<>();
+    comments = new ArrayList<>();
     this.dbAccess = dbAccess;
     this.prefs = preferences;
   }
@@ -54,6 +59,8 @@ public class Repository {
     if (d == null) {
       throw new IllegalStateException("Current Date not in DB");
     }
+
+    comments = d.comments;
 
     for (String name : prefs.getStringSet("BINARY", new HashSet<>())) {
       binaryEntries.put(
@@ -143,5 +150,10 @@ public class Repository {
   @NonNull
   public TimeEntry getTimeEntry(@NonNull String name) {
     return Objects.requireNonNull(timeEntries.get(name));
+  }
+
+  @NonNull
+  public List<String> getComments() {
+    return comments;
   }
 }

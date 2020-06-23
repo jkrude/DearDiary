@@ -5,6 +5,8 @@ import android.os.AsyncTask;
 import android.util.Log;
 import com.jkrude.deardiary.db.entities.BinaryEntry;
 import com.jkrude.deardiary.db.entities.CounterEntry;
+import com.jkrude.deardiary.db.entities.DayCommCrossRef;
+import com.jkrude.deardiary.db.entities.DayComment;
 import com.jkrude.deardiary.db.entities.DayEntity;
 import com.jkrude.deardiary.db.entities.TimeEntry;
 import java.time.LocalDate;
@@ -45,6 +47,13 @@ public class Initiator extends AsyncTask<Void, Void, Void> {
             TimeEntry timeEntry1 = new TimeEntry(LocalTime.of(22, 10), "Eingeschlafen",
                 dayEntity.date_id);
             dao.insertTimeEntry(timeEntry0, timeEntry1);
+            DayComment dayComment = new DayComment("Gut");
+            DayComment dayComment1 = new DayComment("Freunde=sehr schön");
+            DayCommCrossRef commCrossRef = new DayCommCrossRef(today, dayComment.comment);
+            DayCommCrossRef commCrossRef1 = new DayCommCrossRef(today, dayComment1.comment);
+            dao.insertComment(dayComment);
+            dao.insertComment(dayComment1);
+            dao.insertAllRefs(commCrossRef, commCrossRef1);
         } else {
             Log.d(LOGTAG, "DayEntity already available");
         }
@@ -52,7 +61,7 @@ public class Initiator extends AsyncTask<Void, Void, Void> {
         preferences.edit().putStringSet("BINARY", new HashSet<>(Arrays.asList("Gelesen", "Sport")))
             .apply();
         preferences.edit().putStringSet("COUNTER",
-            new HashSet<>(Arrays.asList("Artikel", "ToDo Erstellt, ToDo Erledigt"))).apply();
+            new HashSet<>(Arrays.asList("Artikel", "ToDo Erstellt", "ToDo Erledigt"))).apply();
         preferences.edit()
             .putStringSet("TEXT", new HashSet<>(Collections.singletonList("Film/Serie"))).apply();
         preferences.edit()

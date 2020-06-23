@@ -6,6 +6,8 @@ import java.time.LocalTime;
 
 public class Utility {
 
+  public static final String datePatternShort = "dd.MM";
+
   public static class DateConverter {
 
     @TypeConverter

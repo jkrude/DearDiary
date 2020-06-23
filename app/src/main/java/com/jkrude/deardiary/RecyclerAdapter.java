@@ -13,6 +13,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -223,30 +224,32 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
     public static class ViewHolderTextInput extends ViewHolderGeneric<String> {
         private TextView nameTextView;
-
+        private ImageView checkView;
         private EditText editText;
 
         public ViewHolderTextInput(@NonNull View itemView) {
             super(itemView);
             nameTextView = itemView.findViewById(R.id.text_txtView);
             editText = itemView.findViewById(R.id.text_textInput);
+            checkView = itemView.findViewById(R.id.text_imageview);
             editText.addTextChangedListener(new TextWatcher() {
 
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-
+                    checkView.setVisibility(View.INVISIBLE);
                 }
 
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
                 }
 
                 @Override
                 public void afterTextChanged(Editable s) {
-                    entry.value = s.toString();
+                    if (!s.toString().isEmpty()) {
+                        checkView.setVisibility(View.VISIBLE);
+                        entry.value = s.toString();
+                    }
                 }
-
             });
             // Fix for "Focus search returned a view that wasn't able to take focus"
             editText.setImeOptions(EditorInfo.IME_ACTION_DONE);

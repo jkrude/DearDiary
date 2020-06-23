@@ -1,5 +1,5 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="icon_button">24dp</dimen>
-    <dimen name="cardViewHeight">64dp</dimen>
+    <dimen name="cardViewHeight">56dp</dimen>
 </resources>

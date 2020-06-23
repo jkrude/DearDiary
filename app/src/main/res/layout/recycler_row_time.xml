@@ -1,52 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:app="http://schemas.android.com/apk/res-auto"
-  android:id="@+id/recycler_contraint"
-  android:layout_width="match_parent"
-  android:layout_height="wrap_content"
-  android:layout_margin="8dp"
-  android:layout_marginStart="16dp">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/recycler_contraint"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:layout_marginStart="16dp">
 
     <androidx.cardview.widget.CardView
-      android:layout_width="match_parent"
-      android:layout_height="@dimen/cardViewHeight"
-      app:cardBackgroundColor="@android:color/background_light"
-      app:cardCornerRadius="8dp"
-      app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent">
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/cardViewHeight"
+        app:cardBackgroundColor="@android:color/background_light"
+        app:cardCornerRadius="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <ImageButton
-              android:id="@+id/recycler_time_btn"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:layout_marginEnd="24dp"
-              android:background="@android:color/background_light"
-              app:layout_constraintBottom_toBottomOf="@+id/recycler_time_timeView"
-              app:layout_constraintEnd_toEndOf="parent"
-              app:layout_constraintTop_toTopOf="@+id/recycler_time_timeView"
-              android:contentDescription="Set Time"
-              app:srcCompat="@drawable/schedule" />
+                android:id="@+id/recycler_time_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginEnd="24dp"
+                android:background="@android:color/background_light"
+                android:contentDescription="Set Time"
+                app:layout_constraintBottom_toBottomOf="@+id/recycler_time_timeView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/recycler_time_timeView"
+                app:srcCompat="@drawable/schedule" />
 
             <include
-              android:id="@+id/recycler_time_name"
-              layout="@layout/nametag_textview" />
+                android:id="@+id/recycler_time_name"
+                layout="@layout/nametag_textview"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-              android:id="@+id/recycler_time_timeView"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:text="TextView"
-              android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-              android:textStyle="bold"
-              app:layout_constraintBottom_toBottomOf="@+id/recycler_time_name"
-              app:layout_constraintEnd_toStartOf="@+id/recycler_time_btn"
+                android:id="@+id/recycler_time_timeView"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:text="TextView"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/recycler_time_name"
+                app:layout_constraintEnd_toStartOf="@+id/recycler_time_btn"
                 app:layout_constraintStart_toEndOf="@+id/recycler_time_name"
                 app:layout_constraintTop_toTopOf="@+id/recycler_time_name" />
 

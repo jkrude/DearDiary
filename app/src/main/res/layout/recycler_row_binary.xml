@@ -23,25 +23,21 @@
             android:layout_height="match_parent">
 
             <CheckBox
-              android:id="@+id/binary_checkBox"
-              android:layout_width="wrap_content"
-              android:layout_height="0dp"
-              android:layout_marginEnd="64dp"
-              android:buttonTint="@color/colorAccent"
-              app:layout_constraintBottom_toBottomOf="@+id/binary_nameTxtView"
-              app:layout_constraintEnd_toEndOf="parent"
-              app:layout_constraintTop_toTopOf="@+id/binary_nameTxtView" />
+                android:id="@+id/binary_checkBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="64dp"
+                android:buttonTint="@color/colorAccent"
+                app:layout_constraintBottom_toBottomOf="@+id/binary_nameTxtView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/binary_nameTxtView" />
 
             <include
-              android:id="@+id/binary_nameTxtView"
-              layout="@layout/nametag_textview"
-              android:layout_height="0dp"
-              android:layout_marginTop="16dp"
-              android:layout_marginBottom="16dp"
-              android:layout_marginStart="24dp"
-              app:layout_constraintBottom_toBottomOf="parent"
-              app:layout_constraintStart_toStartOf="parent"
-              app:layout_constraintTop_toTopOf="parent" />
+                android:id="@+id/binary_nameTxtView"
+                layout="@layout/nametag_textview"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

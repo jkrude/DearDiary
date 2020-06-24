@@ -1,5 +1,6 @@
 package com.jkrude.deardiary.db;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.room.Dao;
 import androidx.room.Delete;
@@ -31,11 +32,9 @@ public interface DBAccess {
      * Queries
      */
 
-    @Transaction
     @Query("SELECT * FROM DayEntity")
     List<DayEntity> getDayEntities();
 
-    @Transaction
     @Query("SELECT comment FROM daycomment")
     List<String> getAllComments();
 
@@ -60,34 +59,65 @@ public interface DBAccess {
     List<BinaryEntry> getBinaryEntriesForDate(String date);
 
     @Query("SELECT * FROM textentry" +
-        " WHERE textentry.dayID LIKE :date")
+            " WHERE textentry.dayID LIKE :date")
     List<TextEntry> getTextEntriesForDate(String date);
 
     @Query("SELECT * FROM timeentry" +
-        " WHERE timeentry.dayID LIKE :date")
+            " WHERE timeentry.dayID LIKE :date")
     List<TimeEntry> getTimeEntriesForDate(String date);
 
     @Query("SELECT comment FROM DayCommCrossRef" +
-        " WHERE date_id LIKE :date")
+            " WHERE date_id LIKE :date")
     List<String> getCommentsForDate(String date);
+
+    default List<String> getCommentsForDate(LocalDate date) {
+        return getCommentsForDate(Utility.DateConverter.fromDate(date));
+    }
+
+    @Query("SELECT COUNT(comment) FROM daycomment WHERE comment LIKE :comment")
+    int getCountComment(String comment);
+
+    @Query("SELECT COUNT(comment) FROM daycommcrossref WHERE comment LIKE :comment")
+    int getCountCommDayJoin(String comment);
 
     /*
      * INSERT / DELETE / UPDATE
      */
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertComment(DayComment... comment);
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    void insertComment(DayComment... comments);
+
+    @Update
+    void updateComment(DayComment... comments);
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    void insertCommentDayJoin(DayCommCrossRef... dayCommCrossRefs);
+
+    @Transaction
+    default void insertCommentForDay(@NonNull LocalDate date, @NonNull String comment) {
+        //String dateAsString = Utility.DateConverter.fromDate(date);
+        insertComment(new DayComment(comment)); //try to insert -> else fine
+        insertCommentDayJoin(new DayCommCrossRef(date, comment));
+    }
+
+    @Transaction
+    default void deleteCommentForDay(@NonNull LocalDate date, @NonNull String comment) {
+        deleteRef(new DayCommCrossRef(date, comment));
+        if (getCountCommDayJoin(comment) == 0) {
+            deleteComment(new DayComment(comment));
+        }
+    }
 
     @Delete
     void deleteComment(DayComment... comment);
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertRefs(DayCommCrossRef... refs);
 
     @Delete
     void deleteRef(DayCommCrossRef... refs);
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertDay(DayEntity... dayEntity);
 
     @Delete

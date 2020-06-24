@@ -1,6 +1,7 @@
 package com.jkrude.deardiary.db;
 
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -44,7 +45,7 @@ public class Repository {
   private @NonNull
   Map<String, TimeEntry> timeEntries;
   private @NonNull
-  List<String> dayComments;
+  Set<String> commentsForToday;
   private @NonNull
   List<String> allComments;
 
@@ -54,7 +55,7 @@ public class Repository {
     counterEntries = new HashMap<>();
     textEntries = new HashMap<>();
     timeEntries = new HashMap<>();
-    dayComments = new ArrayList<>();
+    commentsForToday = new HashSet<>();
     allComments = new ArrayList<>();
     this.dbAccess = dbAccess;
     this.prefs = preferences;
@@ -72,7 +73,8 @@ public class Repository {
       throw new IllegalStateException("Current Date not in DB");
     }
     allComments = dbAccess.getAllComments();
-    dayComments = d.comments;
+    //TODO refactor DayWithAllEntries
+    commentsForToday = new HashSet<>(d.comments);
 
     for (String name : prefs.getStringSet("BINARY", new HashSet<>())) {
       binaryEntries.put(
@@ -121,7 +123,7 @@ public class Repository {
     dbAccess.insertCounterEntry(counterEntries.values().toArray(new CounterEntry[0]));
     dbAccess.insertTextEntry(textEntries.values().toArray(new TextEntry[0]));
     dbAccess.insertTimeEntry(timeEntries.values().toArray(new TimeEntry[0]));
-    dayComments.forEach(item -> {
+    commentsForToday.forEach(item -> {
       if (!allComments.contains(item)) {
         dbAccess.insertComment(new DayComment(item));
       }
@@ -171,8 +173,20 @@ public class Repository {
   }
 
   @NonNull
-  public List<String> getDayComments() {
-    return dayComments;
+  public Set<String> getCommentsForToday() {
+    return commentsForToday;
+  }
+
+  public void addComment(@NonNull String comment) {
+    commentsForToday.add(comment);
+    AsyncTask.execute(() ->
+            dbAccess.insertCommentForDay(today, comment));
+  }
+
+  public void removeComment(@NonNull String comment) {
+    commentsForToday.remove(comment);
+    AsyncTask.execute(() ->
+            dbAccess.deleteCommentForDay(today, comment));
   }
 
   @NonNull

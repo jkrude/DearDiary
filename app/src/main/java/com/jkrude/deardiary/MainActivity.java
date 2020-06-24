@@ -115,14 +115,14 @@ public class MainActivity extends AppCompatActivity {
         commentInput.setOnKeyListener((v, keyCode, event) -> {
             if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
                 String comment = commentInput.getText().toString();
-                repository.getDayComments().add(comment);
+                repository.addComment(comment);
                 updateCommentList(comment);
                 commentInput.setText("");
             }
             return false;
         });
 
-        for (String comment : repository.getDayComments()) {
+        for (String comment : repository.getCommentsForToday()) {
             updateCommentList(comment);
         }
 
@@ -146,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
                     .setTitle("Delete")
                     .setPositiveButton("Delete", (dialog, which) -> {
                         linearLayout.removeView(v);
-                        repository.getDayComments().remove(comment);
+                        repository.removeComment(comment);
                     })
                     .setNegativeButton("Cancel", (dialog, which) -> {
                         //Do nothing.

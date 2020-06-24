@@ -263,7 +263,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
                     }
                 }
             });
-            // Fix for "Focus search returned a view that wasn't able to take focus"
+            // Fix for "Focus search returned a.json view that wasn't able to take focus"
             editText.setImeOptions(EditorInfo.IME_ACTION_DONE);
         }
 

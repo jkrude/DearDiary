@@ -1,6 +1,7 @@
 package com.jkrude.deardiary;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -18,9 +19,11 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ShareCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
@@ -30,6 +33,8 @@ import com.jkrude.deardiary.db.DBAccess;
 import com.jkrude.deardiary.db.Initiator;
 import com.jkrude.deardiary.db.Repository;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ExecutionException;
 
@@ -70,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+        // as you specify a.json parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
@@ -104,6 +109,16 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
             return true;
+        } else if (id == R.id.action_export) {
+            AsyncTask.execute(() -> {
+                Intent shareIntent = ShareCompat.IntentBuilder.from(MainActivity.this)
+                        .setType("text/plain")
+                        .setText(repository.exportAsJSON())
+                        .getIntent();
+                if (shareIntent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(shareIntent);
+                }
+            });
         }
 
         return super.onOptionsItemSelected(item);
@@ -176,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
                 .inflate(R.layout.horizontal_textview, null);
         textView.setText(comment);
         textView.setOnLongClickListener(v -> {
-            //Option to delete a comment
+            //Option to delete a.json comment
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
             builder.setMessage("Should the comment be deleted?")
                     .setTitle("Delete")
@@ -192,5 +207,23 @@ public class MainActivity extends AppCompatActivity {
             return false;
         });
         linearLayout.addView(textView);
+    }
+
+    private void writeToStorage(@NonNull String fileName, @NonNull String jsonContent) {
+        File file = new File(getApplicationContext().getFilesDir(), "exportJSON");
+        if (!file.exists()) {
+            file.mkdir();
+        }
+        try {
+            File mFile = new File(file, fileName);
+            FileWriter writer = new FileWriter(mFile);
+            writer.append(jsonContent);
+            writer.flush();
+            writer.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
     }
 }

@@ -6,7 +6,11 @@ import androidx.room.Room;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.jkrude.deardiary.db.entities.CounterEntry;
 import com.jkrude.deardiary.db.entities.DayComment;
+import com.jkrude.deardiary.db.entities.DayEntity;
+import com.jkrude.deardiary.db.entities.TextEntry;
+import com.jkrude.deardiary.db.entities.TimeEntry;
 
 import org.junit.After;
 import org.junit.Before;
@@ -15,6 +19,7 @@ import org.junit.runner.RunWith;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import static org.junit.Assert.assertFalse;
@@ -94,6 +99,41 @@ public class DBAccessTest {
         assertTrue(allComments.remove(comment1)); // comment1 still exists
         assertFalse(allComments.remove(comment2)); // comment2 does not exist anymore
 
+    }
+
+    @Test
+    public void testJSON() {
+        DayComment[] comments = {new DayComment("Good"), new DayComment("ok"), new DayComment("well")};
+        LocalDate[] dates = {
+                LocalDate.of(2020, 6, 1),
+                LocalDate.of(2020, 6, 2),
+                LocalDate.of(2020, 6, 3),
+                LocalDate.of(2020, 6, 5)
+        };
+        DayEntity[] days = {
+                new DayEntity(dates[0]),
+                new DayEntity(dates[1]),
+                new DayEntity(dates[2]),
+                new DayEntity(dates[3])
+        };
+        dbAccess.insertDay(days);
+        TimeEntry[] timeEntry = {new TimeEntry(LocalTime.MIDNIGHT, "sleep", dates[0])};
+        TextEntry[] textEntries = {new TextEntry("text", "Film", dates[0]),
+                new TextEntry("SW", "Film", dates[1])};
+        CounterEntry[] counterEntries = {
+                new CounterEntry(1, "Gelesen", dates[0]),
+                new CounterEntry(3, "Gelesen", dates[1]),
+                new CounterEntry(5, "Gelesen", dates[2]),
+                new CounterEntry(2, "Gelesen", dates[3])};
+        dbAccess.insertCommentForDay(dates[0], comments[0].comment);
+        dbAccess.insertCommentForDay(dates[0], comments[1].comment);
+        dbAccess.insertCommentForDay(dates[0], comments[2].comment);
+        dbAccess.insertCommentForDay(dates[1], comments[0].comment);
+        dbAccess.insertCommentForDay(dates[2], comments[0].comment);
+        dbAccess.insertTimeEntry(timeEntry);
+        dbAccess.insertTextEntry(textEntries);
+        dbAccess.insertCounterEntry(counterEntries);
+        System.out.println(dbAccess.exportAsJSON());
     }
 
 }

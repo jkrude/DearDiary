@@ -153,5 +153,4 @@ public interface DBAccess {
         d.comments = getCommentsForDate(dateAsString);
         return d;
     }
-
 }

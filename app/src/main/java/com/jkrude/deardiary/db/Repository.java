@@ -6,12 +6,17 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.jkrude.deardiary.Utility;
 import com.jkrude.deardiary.db.entities.BinaryEntry;
 import com.jkrude.deardiary.db.entities.CounterEntry;
+import com.jkrude.deardiary.db.entities.DayEntity;
 import com.jkrude.deardiary.db.entities.DayWithAllEntries;
 import com.jkrude.deardiary.db.entities.TextEntry;
 import com.jkrude.deardiary.db.entities.TimeEntry;
+
+import org.json.JSONArray;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -176,14 +181,24 @@ public class Repository {
             dbAccess.insertCommentForDay(today, comment));
   }
 
-  public void removeComment(@NonNull String comment) {
-    commentsForToday.remove(comment);
-    AsyncTask.execute(() ->
-            dbAccess.deleteCommentForDay(today, comment));
-  }
+    public void removeComment(@NonNull String comment) {
+        commentsForToday.remove(comment);
+        AsyncTask.execute(() ->
+                dbAccess.deleteCommentForDay(today, comment));
+    }
 
-  @NonNull
-  public List<String> getAllComments() {
-    return allComments;
-  }
+    @NonNull
+    public List<String> getAllComments() {
+        return allComments;
+    }
+
+    public String exportAsJSON() {
+        JSONArray jsonArray = new JSONArray();
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        List<DayEntity> dayEntities = dbAccess.getDayEntities();
+        for (DayEntity day : dayEntities) {
+            jsonArray.put(day.date_id.toString() + ": " + gson.toJson(dbAccess.getEverythingForOneDay(day.date_id)));
+        }
+        return jsonArray.toString();
+    }
 }

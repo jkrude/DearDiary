@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.jkrude.deardiary.MainActivity;
 import com.jkrude.deardiary.Utility;
 import com.jkrude.deardiary.db.entities.BinaryEntry;
 import com.jkrude.deardiary.db.entities.CounterEntry;
@@ -135,6 +136,11 @@ public class Repository {
   }
 
   @NonNull
+  public LocalDate getToday() {
+    return today;
+  }
+
+  @NonNull
   public Set<String> allCounterCategories() {
     return counterEntries.keySet();
   }
@@ -192,13 +198,25 @@ public class Repository {
         return allComments;
     }
 
-    public String exportAsJSON() {
-        JSONArray jsonArray = new JSONArray();
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        List<DayEntity> dayEntities = dbAccess.getDayEntities();
-        for (DayEntity day : dayEntities) {
-            jsonArray.put(day.date_id.toString() + ": " + gson.toJson(dbAccess.getEverythingForOneDay(day.date_id)));
-        }
-        return jsonArray.toString();
+  public String exportAsJSON() {
+    JSONArray jsonArray = new JSONArray();
+    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    List<DayEntity> dayEntities = dbAccess.getDayEntities();
+    for (DayEntity day : dayEntities) {
+      jsonArray.put(day.date_id.toString() + ": " + gson.toJson(dbAccess.getEverythingForOneDay(day.date_id)));
     }
+    return jsonArray.toString();
+  }
+
+  public void nextDay() {
+    save();
+    today = today.plusDays(1);
+    prefs.edit().putString(MainActivity.TODAY, Utility.DateConverter.fromDate(today)).apply();
+    dbAccess.insertDay(new DayEntity(today));
+    binaryEntries.values().forEach(item -> item.setValue(false));
+    counterEntries.values().forEach(item -> item.setValue(0));
+    textEntries.values().forEach(item -> item.setValue(""));
+    timeEntries.values().forEach(timeEntry -> timeEntry.setValue(LocalTime.MIDNIGHT));
+    commentsForToday.clear();
+  }
 }

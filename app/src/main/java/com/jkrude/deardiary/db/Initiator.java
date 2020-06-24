@@ -4,6 +4,8 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.jkrude.deardiary.MainActivity;
+import com.jkrude.deardiary.Utility;
 import com.jkrude.deardiary.db.entities.BinaryEntry;
 import com.jkrude.deardiary.db.entities.CounterEntry;
 import com.jkrude.deardiary.db.entities.DayEntity;
@@ -32,6 +34,10 @@ public class Initiator extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void... voids) {
         LocalDate today = LocalDate.now();
+        String todaySt = preferences.getString(MainActivity.TODAY, null);
+        if (todaySt != null) {
+            today = Utility.DateConverter.toDate(todaySt);
+        }
         if (dao.getDayEntitiesForDay(today).isEmpty()) {
             Log.d(LOGTAG, "Creating new DayEntity");
             DayEntity dayEntity = new DayEntity(today);

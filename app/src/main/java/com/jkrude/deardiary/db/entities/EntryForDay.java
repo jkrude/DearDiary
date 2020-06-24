@@ -1,6 +1,7 @@
 package com.jkrude.deardiary.db.entities;
 
 import androidx.annotation.NonNull;
+
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -37,8 +38,12 @@ public abstract class EntryForDay<T> {
     @Override
     public String toString() {
         return "EntryForDay{" +
-            "value=" + value +
-            ", catName='" + catName + '\'' +
-            '}';
+                "value=" + value +
+                ", catName='" + catName + '\'' +
+                '}';
+    }
+
+    public void setValue(@NonNull T value) {
+        this.value = value;
     }
 }

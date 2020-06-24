@@ -19,7 +19,6 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -33,8 +32,6 @@ import com.jkrude.deardiary.db.DBAccess;
 import com.jkrude.deardiary.db.Initiator;
 import com.jkrude.deardiary.db.Repository;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ExecutionException;
 
@@ -47,15 +44,19 @@ public class MainActivity extends AppCompatActivity {
     private Repository repository;
     private LinearLayout linearLayout;
     private RecyclerAdapter adapter;
+    private AppDatabase db;
+    private SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         Log.d(LOGTAG, "onCreate");
-        AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "db").build();
+        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "db").build();
         linearLayout = findViewById(R.id.linearLayout);
-        SharedPreferences prefs = getApplicationContext()
+        prefs = getApplicationContext()
                 .getSharedPreferences(SHARED_PREFS_TAG, Context.MODE_PRIVATE);
         repository = new Repository(
                 db.dbAccess(),
@@ -79,48 +80,58 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            Toolbar toolbar = findViewById(R.id.toolbar);
-            toolbar.setTitle("");
-            EditText searchInput = findViewById(R.id.searchInput);
-            ImageButton backButton = findViewById(R.id.backBtn);
-            backButton.setVisibility(View.VISIBLE);
-            backButton.setOnClickListener(l -> {
-                searchInput.setVisibility(View.INVISIBLE);
-                backButton.setVisibility(View.INVISIBLE);
-                toolbar.setTitle("DearDiary");
-                adapter.filter("");
-            });
-            searchInput.setVisibility(View.VISIBLE);
-            searchInput.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+        switch (id) {
+            case R.id.action_end_day:
+                try {
+                    new NextDayTask(repository).execute().get();
+                } catch (ExecutionException | InterruptedException e) {
+                    e.printStackTrace();
                 }
+                refreshUI();
+                break;
 
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
+            case R.id.action_settings:
+                Toolbar toolbar = findViewById(R.id.toolbar);
+                toolbar.setTitle("");
+                EditText searchInput = findViewById(R.id.searchInput);
+                ImageButton backButton = findViewById(R.id.backBtn);
+                backButton.setVisibility(View.VISIBLE);
+                backButton.setOnClickListener(l -> {
+                    searchInput.setVisibility(View.INVISIBLE);
+                    backButton.setVisibility(View.INVISIBLE);
+                    toolbar.setTitle("DearDiary");
+                    adapter.filter("");
+                });
+                searchInput.setVisibility(View.VISIBLE);
+                searchInput.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-                }
+                    }
 
-                @Override
-                public void afterTextChanged(Editable s) {
-                    adapter.filter(s.toString());
-                }
-            });
-            return true;
-        } else if (id == R.id.action_export) {
-            AsyncTask.execute(() -> {
-                Intent shareIntent = ShareCompat.IntentBuilder.from(MainActivity.this)
-                        .setType("text/plain")
-                        .setText(repository.exportAsJSON())
-                        .getIntent();
-                if (shareIntent.resolveActivity(getPackageManager()) != null) {
-                    startActivity(shareIntent);
-                }
-            });
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        adapter.filter(s.toString());
+                    }
+                });
+                return true;
+            case R.id.action_export:
+                AsyncTask.execute(() -> {
+                    Intent shareIntent = ShareCompat.IntentBuilder.from(MainActivity.this)
+                            .setType("text/plain")
+                            .setText(repository.exportAsJSON())
+                            .getIntent();
+                    if (shareIntent.resolveActivity(getPackageManager()) != null) {
+                        startActivity(shareIntent);
+                    }
+                });
+                break;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -140,8 +151,6 @@ public class MainActivity extends AppCompatActivity {
                 repository);
         initiator.execute();
         //UI-setup
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
         TextView dateDisplay = findViewById(R.id.date_display);
         try {
             // needs loading screen
@@ -186,6 +195,14 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
     }
 
+    private void refreshUI() {
+        TextView dateDisplay = findViewById(R.id.date_display);
+        dateDisplay.setText(repository.getToday()
+                .format(DateTimeFormatter.ofPattern(Utility.datePatternShort)));
+        linearLayout.removeAllViews();
+        adapter.filter("");
+    }
+
     private void updateCommentList(String comment) {
         TextView textView = (TextView) getLayoutInflater()
                 .inflate(R.layout.horizontal_textview, null);
@@ -209,21 +226,18 @@ public class MainActivity extends AppCompatActivity {
         linearLayout.addView(textView);
     }
 
-    private void writeToStorage(@NonNull String fileName, @NonNull String jsonContent) {
-        File file = new File(getApplicationContext().getFilesDir(), "exportJSON");
-        if (!file.exists()) {
-            file.mkdir();
+
+    public static class NextDayTask extends AsyncTask<Void, Void, Void> {
+        private Repository repository;
+
+        public NextDayTask(Repository repository) {
+            this.repository = repository;
         }
-        try {
-            File mFile = new File(file, fileName);
-            FileWriter writer = new FileWriter(mFile);
-            writer.append(jsonContent);
-            writer.flush();
-            writer.close();
 
-        } catch (Exception e) {
-            e.printStackTrace();
-
+        @Override
+        protected Void doInBackground(Void... voids) {
+            repository.nextDay();
+            return null;
         }
     }
 }

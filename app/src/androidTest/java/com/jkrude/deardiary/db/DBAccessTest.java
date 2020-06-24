@@ -133,7 +133,7 @@ public class DBAccessTest {
         dbAccess.insertTimeEntry(timeEntry);
         dbAccess.insertTextEntry(textEntries);
         dbAccess.insertCounterEntry(counterEntries);
-        System.out.println(dbAccess.exportAsJSON());
+        //System.out.println(dbAccess.exportAsJSON());
     }
 
 }

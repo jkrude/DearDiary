@@ -31,7 +31,6 @@ public interface DBAccess {
     /*
      * Queries
      */
-
     @Query("SELECT * FROM DayEntity")
     List<DayEntity> getDayEntities();
 
@@ -74,21 +73,15 @@ public interface DBAccess {
         return getCommentsForDate(Utility.DateConverter.fromDate(date));
     }
 
-    @Query("SELECT COUNT(comment) FROM daycomment WHERE comment LIKE :comment")
-    int getCountComment(String comment);
-
     @Query("SELECT COUNT(comment) FROM daycommcrossref WHERE comment LIKE :comment")
     int getCountCommDayJoin(String comment);
 
     /*
      * INSERT / DELETE / UPDATE
      */
-
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertComment(DayComment... comments);
 
-    @Update
-    void updateComment(DayComment... comments);
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertCommentDayJoin(DayCommCrossRef... dayCommCrossRefs);
@@ -110,9 +103,6 @@ public interface DBAccess {
 
     @Delete
     void deleteComment(DayComment... comment);
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    void insertRefs(DayCommCrossRef... refs);
 
     @Delete
     void deleteRef(DayCommCrossRef... refs);
@@ -146,7 +136,6 @@ public interface DBAccess {
 
     @Update
     void updateTimeEntry(TimeEntry... timeEntries);
-
 
     @Transaction
     @Nullable

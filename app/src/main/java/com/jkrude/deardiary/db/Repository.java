@@ -9,8 +9,6 @@ import androidx.annotation.NonNull;
 import com.jkrude.deardiary.Utility;
 import com.jkrude.deardiary.db.entities.BinaryEntry;
 import com.jkrude.deardiary.db.entities.CounterEntry;
-import com.jkrude.deardiary.db.entities.DayCommCrossRef;
-import com.jkrude.deardiary.db.entities.DayComment;
 import com.jkrude.deardiary.db.entities.DayWithAllEntries;
 import com.jkrude.deardiary.db.entities.TextEntry;
 import com.jkrude.deardiary.db.entities.TimeEntry;
@@ -123,12 +121,7 @@ public class Repository {
     dbAccess.insertCounterEntry(counterEntries.values().toArray(new CounterEntry[0]));
     dbAccess.insertTextEntry(textEntries.values().toArray(new TextEntry[0]));
     dbAccess.insertTimeEntry(timeEntries.values().toArray(new TimeEntry[0]));
-    commentsForToday.forEach(item -> {
-      if (!allComments.contains(item)) {
-        dbAccess.insertComment(new DayComment(item));
-      }
-      dbAccess.insertRefs(new DayCommCrossRef(today, item));
-    });
+    commentsForToday.forEach(item -> dbAccess.insertCommentForDay(today, item));
   }
 
   @NonNull

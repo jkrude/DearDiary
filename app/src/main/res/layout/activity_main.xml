@@ -1,36 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:app="http://schemas.android.com/apk/res-auto"
-  xmlns:tools="http://schemas.android.com/tools"
-  android:id="@+id/coordinatorLayout"
-  android:layout_width="match_parent"
-  android:layout_height="match_parent"
-  android:background="@color/colorPrimaryDark"
-  tools:context=".MainActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinatorLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark"
+    tools:context=".MainActivity">
 
-    <EditText
-      android:id="@+id/EmotionsInput"
-      android:layout_width="wrap_content"
-      android:layout_height="44dp"
-      android:background="@drawable/rounded_textview"
-      android:ems="10"
-      android:hint="verträumt"
-      android:inputType="textPersonName"
-      android:textAlignment="center"
-      android:textColor="#FFFFFF"
-      app:layout_constraintBottom_toBottomOf="@+id/date_display"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toEndOf="@+id/date_display"
-      app:layout_constraintTop_toTopOf="@+id/date_display" />
+    <AutoCompleteTextView
+        android:id="@+id/commentInput"
+        android:layout_width="wrap_content"
+        android:layout_height="44dp"
+        android:background="@drawable/rounded_textview"
+        android:ems="10"
+        android:hint="verträumt"
+        android:inputType="textPersonName"
+        android:textAlignment="center"
+        android:textColor="@android:color/black"
+        app:layout_constraintBottom_toBottomOf="@+id/date_display"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/date_display"
+        app:layout_constraintTop_toTopOf="@+id/date_display" />
+
     <HorizontalScrollView
-      android:id="@+id/horizontalScrollView"
-      android:layout_width="0dp"
-      android:layout_height="wrap_content"
-      android:layout_marginTop="16dp"
-      android:minHeight="24dp"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@+id/date_display">
+        android:id="@+id/horizontalScrollView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:minHeight="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/date_display">
+
         <LinearLayout
           android:id="@+id/linearLayout"
           android:layout_width="wrap_content"

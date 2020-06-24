@@ -3,12 +3,14 @@ package com.jkrude.deardiary.db;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
+
 import com.jkrude.deardiary.db.entities.BinaryEntry;
 import com.jkrude.deardiary.db.entities.CounterEntry;
 import com.jkrude.deardiary.db.entities.DayCommCrossRef;
 import com.jkrude.deardiary.db.entities.DayComment;
 import com.jkrude.deardiary.db.entities.DayEntity;
 import com.jkrude.deardiary.db.entities.TimeEntry;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Arrays;
@@ -53,7 +55,7 @@ public class Initiator extends AsyncTask<Void, Void, Void> {
             DayCommCrossRef commCrossRef1 = new DayCommCrossRef(today, dayComment1.comment);
             dao.insertComment(dayComment);
             dao.insertComment(dayComment1);
-            dao.insertAllRefs(commCrossRef, commCrossRef1);
+            dao.insertRefs(commCrossRef, commCrossRef1);
         } else {
             Log.d(LOGTAG, "DayEntity already available");
         }

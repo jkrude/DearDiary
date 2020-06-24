@@ -8,6 +8,7 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Transaction;
 import androidx.room.Update;
+
 import com.jkrude.deardiary.Utility;
 import com.jkrude.deardiary.Utility.DateConverter;
 import com.jkrude.deardiary.db.entities.BinaryEntry;
@@ -19,6 +20,7 @@ import com.jkrude.deardiary.db.entities.DayWithAllEntries;
 import com.jkrude.deardiary.db.entities.DayWithComments;
 import com.jkrude.deardiary.db.entities.TextEntry;
 import com.jkrude.deardiary.db.entities.TimeEntry;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -32,6 +34,10 @@ public interface DBAccess {
     @Transaction
     @Query("SELECT * FROM DayEntity")
     List<DayEntity> getDayEntities();
+
+    @Transaction
+    @Query("SELECT comment FROM daycomment")
+    List<String> getAllComments();
 
     @Transaction
     @Query("SELECT * FROM dayentity WHERE date_id LIKE :date")
@@ -76,7 +82,10 @@ public interface DBAccess {
     void deleteComment(DayComment... comment);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertAllRefs(DayCommCrossRef... refs);
+    void insertRefs(DayCommCrossRef... refs);
+
+    @Delete
+    void deleteRef(DayCommCrossRef... refs);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertDay(DayEntity... dayEntity);

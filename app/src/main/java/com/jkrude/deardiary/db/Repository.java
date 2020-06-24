@@ -2,13 +2,18 @@ package com.jkrude.deardiary.db;
 
 import android.content.SharedPreferences;
 import android.util.Log;
+
 import androidx.annotation.NonNull;
+
 import com.jkrude.deardiary.Utility;
 import com.jkrude.deardiary.db.entities.BinaryEntry;
 import com.jkrude.deardiary.db.entities.CounterEntry;
+import com.jkrude.deardiary.db.entities.DayCommCrossRef;
+import com.jkrude.deardiary.db.entities.DayComment;
 import com.jkrude.deardiary.db.entities.DayWithAllEntries;
 import com.jkrude.deardiary.db.entities.TextEntry;
 import com.jkrude.deardiary.db.entities.TimeEntry;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -24,6 +29,9 @@ public class Repository {
   public static final String LOGTAG = "Repository";
 
   private @NonNull
+  LocalDate today;
+
+  private @NonNull
   DBAccess dbAccess;
   private @NonNull
   SharedPreferences prefs;
@@ -36,7 +44,9 @@ public class Repository {
   private @NonNull
   Map<String, TimeEntry> timeEntries;
   private @NonNull
-  List<String> comments;
+  List<String> dayComments;
+  private @NonNull
+  List<String> allComments;
 
 
   public Repository(@NonNull DBAccess dbAccess, @NonNull SharedPreferences preferences) {
@@ -44,53 +54,55 @@ public class Repository {
     counterEntries = new HashMap<>();
     textEntries = new HashMap<>();
     timeEntries = new HashMap<>();
-    comments = new ArrayList<>();
+    dayComments = new ArrayList<>();
+    allComments = new ArrayList<>();
     this.dbAccess = dbAccess;
     this.prefs = preferences;
+    this.today = LocalDate.MAX;
   }
 
   public void populate() {
-    String today = prefs.getString("TODAY", null);
-    if (today == null) {
+    String todayAsSt = prefs.getString("TODAY", null);
+    if (todayAsSt == null) {
       throw new IllegalStateException("Current Date not in SharedPreferences");
     }
-    LocalDate date = Utility.DateConverter.toDate(today);
-    DayWithAllEntries d = dbAccess.getEverythingForOneDay(date);
+    this.today = Utility.DateConverter.toDate(todayAsSt);
+    DayWithAllEntries d = dbAccess.getEverythingForOneDay(today);
     if (d == null) {
       throw new IllegalStateException("Current Date not in DB");
     }
-
-    comments = d.comments;
+    allComments = dbAccess.getAllComments();
+    dayComments = d.comments;
 
     for (String name : prefs.getStringSet("BINARY", new HashSet<>())) {
       binaryEntries.put(
-          name,
-          new BinaryEntry(
-              d.binaryCategories.getOrDefault(name, false), name, date));
+              name,
+              new BinaryEntry(
+                      d.binaryCategories.getOrDefault(name, false), name, today));
     }
     for (String name : prefs.getStringSet("COUNTER", new HashSet<>())) {
       counterEntries.put(
-          name,
-          new CounterEntry(
-              Objects.requireNonNull(d.counterCategories.getOrDefault(name, 0)),
               name,
-              date));
+              new CounterEntry(
+                      Objects.requireNonNull(d.counterCategories.getOrDefault(name, 0)),
+                      name,
+                      today));
     }
     for (String name : prefs.getStringSet("TEXT", new HashSet<>())) {
       textEntries.put(
-          name,
-          new TextEntry(
-              Objects.requireNonNull(d.textCategories.getOrDefault(name, "")),
               name,
-              date));
+              new TextEntry(
+                      Objects.requireNonNull(d.textCategories.getOrDefault(name, "")),
+                      name,
+                      today));
     }
     for (String name : prefs.getStringSet("TIME", new HashSet<>())) {
       timeEntries.put(
-          name,
-          new TimeEntry(
-              Objects.requireNonNull(d.timeCategories.getOrDefault(name, LocalTime.MIDNIGHT)),
               name,
-              date));
+              new TimeEntry(
+                      Objects.requireNonNull(d.timeCategories.getOrDefault(name, LocalTime.MIDNIGHT)),
+                      name,
+                      today));
     }
     Log.d(LOGTAG, "loading non default values:");
     Log.d(LOGTAG,
@@ -109,6 +121,12 @@ public class Repository {
     dbAccess.insertCounterEntry(counterEntries.values().toArray(new CounterEntry[0]));
     dbAccess.insertTextEntry(textEntries.values().toArray(new TextEntry[0]));
     dbAccess.insertTimeEntry(timeEntries.values().toArray(new TimeEntry[0]));
+    dayComments.forEach(item -> {
+      if (!allComments.contains(item)) {
+        dbAccess.insertComment(new DayComment(item));
+      }
+      dbAccess.insertRefs(new DayCommCrossRef(today, item));
+    });
   }
 
   @NonNull
@@ -153,7 +171,12 @@ public class Repository {
   }
 
   @NonNull
-  public List<String> getComments() {
-    return comments;
+  public List<String> getDayComments() {
+    return dayComments;
+  }
+
+  @NonNull
+  public List<String> getAllComments() {
+    return allComments;
   }
 }

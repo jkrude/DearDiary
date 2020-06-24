@@ -28,6 +28,7 @@ import com.jkrude.deardiary.db.entities.EntryForDay;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("rawtypes")
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolderGeneric> {
@@ -49,20 +50,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         this.context = context;
         this.rep = rep;
 
-        positions = new ArrayList<>();
-        for (String name : rep.allBinaryCategories()) {
-            positions.add(new Pair<>(name, ViewType.BINARY));
-        }
-        for (String name : rep.allCounterCategories()) {
-            positions.add(new Pair<>(name, ViewType.COUNTER));
-        }
-        for (String name : rep.allTextCategories()) {
-            positions.add(new Pair<>(name, ViewType.TEXT));
-        }
-
-        for (String name : rep.allTimeCategories()) {
-            positions.add(new Pair<>(name, ViewType.TIME));
-        }
+        positions = positionsFromRepo();
     }
 
 
@@ -156,6 +144,30 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             return code;
         }
     }
+
+    public List<Pair<String, ViewType>> positionsFromRepo() {
+        List<Pair<String, ViewType>> list = new ArrayList<>();
+        for (String name : rep.allBinaryCategories()) {
+            list.add(new Pair<>(name, ViewType.BINARY));
+        }
+        for (String name : rep.allCounterCategories()) {
+            list.add(new Pair<>(name, ViewType.COUNTER));
+        }
+        for (String name : rep.allTextCategories()) {
+            list.add(new Pair<>(name, ViewType.TEXT));
+        }
+
+        for (String name : rep.allTimeCategories()) {
+            list.add(new Pair<>(name, ViewType.TIME));
+        }
+        return list;
+    }
+
+    public void filter(@NonNull String filter) {
+        positions = positionsFromRepo().stream().filter(item -> item.first.toLowerCase().contains(filter.toLowerCase())).collect(Collectors.toList());
+        notifyDataSetChanged();
+    }
+
 
     // Generic ViewHolder
     public abstract static class ViewHolderGeneric<T> extends RecyclerView.ViewHolder {

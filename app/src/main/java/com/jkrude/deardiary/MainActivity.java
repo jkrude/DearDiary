@@ -4,12 +4,17 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -36,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Repository repository;
     private LinearLayout linearLayout;
+    private RecyclerAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +75,34 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Toolbar toolbar = findViewById(R.id.toolbar);
+            toolbar.setTitle("");
+            EditText searchInput = findViewById(R.id.searchInput);
+            ImageButton backButton = findViewById(R.id.backBtn);
+            backButton.setVisibility(View.VISIBLE);
+            backButton.setOnClickListener(l -> {
+                searchInput.setVisibility(View.INVISIBLE);
+                backButton.setVisibility(View.INVISIBLE);
+                toolbar.setTitle("DearDiary");
+                adapter.filter("");
+            });
+            searchInput.setVisibility(View.VISIBLE);
+            searchInput.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    adapter.filter(s.toString());
+                }
+            });
             return true;
         }
 
@@ -83,6 +117,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupUI(DBAccess dbAccess, SharedPreferences prefs) {
+        findViewById(R.id.searchInput).setVisibility(View.INVISIBLE);
+        findViewById(R.id.backBtn).setVisibility(View.INVISIBLE);
         Initiator initiator = new Initiator(
                 prefs,
                 dbAccess,
@@ -128,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
 
         // RecyclerView config
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
-        RecyclerAdapter adapter = new RecyclerAdapter(
+        adapter = new RecyclerAdapter(
                 this,
                 repository);
         recyclerView.setAdapter(adapter);

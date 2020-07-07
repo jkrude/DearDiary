@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.jkrude.deardiary.GsonAdapter;
 import com.jkrude.deardiary.MainActivity;
 import com.jkrude.deardiary.Utility;
 import com.jkrude.deardiary.db.entities.BinaryEntry;
@@ -200,7 +201,7 @@ public class Repository {
 
   public String exportAsJSON() {
     JSONArray jsonArray = new JSONArray();
-    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    Gson gson = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(LocalTime.class, new GsonAdapter()).create();
     List<DayEntity> dayEntities = dbAccess.getDayEntities();
     for (DayEntity day : dayEntities) {
       jsonArray.put(day.date_id.toString() + ": " + gson.toJson(dbAccess.getEverythingForOneDay(day.date_id)));

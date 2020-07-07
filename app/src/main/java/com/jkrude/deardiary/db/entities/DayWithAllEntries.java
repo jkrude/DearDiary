@@ -2,6 +2,7 @@ package com.jkrude.deardiary.db.entities;
 
 
 import androidx.annotation.NonNull;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ import java.util.Map;
 public class DayWithAllEntries {
 
   @NonNull
-  public LocalDate date;
+  public transient LocalDate date;
   @NonNull
   public List<String> comments;
   @NonNull
